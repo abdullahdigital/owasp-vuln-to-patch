@@ -1,0 +1,434 @@
+[
+    {
+        "name": "test",
+        "email": "test@test.com",
+        "message": "test",
+        "timestamp": 1748488524,
+        "status": "success"
+    },
+    {
+        "name": "test",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": 1748488556,
+        "status": "success",
+        "file": "webhostingSSD.pdf"
+    },
+    {
+        "name": "test",
+        "email": "test1@gmail.com",
+        "message": "<script>alert('XSS')<\/script>\r\n",
+        "timestamp": 1748488717,
+        "status": "success"
+    },
+    {
+        "name": "teest",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": 1748495147,
+        "status": "success",
+        "file": "xxe.xml",
+        "xml_content": "<?xml version=\"1.0\"?>\n"
+    },
+    {
+        "name": "test",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": 1748495981,
+        "status": "success",
+        "file": "xxe.xml",
+        "xml_content": null
+    },
+    {
+        "name": "test",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": 1748496508,
+        "status": "success",
+        "file": "xxe.xml",
+        "xml_content": null
+    },
+    {
+        "name": "test",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-29 05:38:10",
+        "status": "success",
+        "file": "xxe.xml",
+        "xml_content": "<?xml version=\"1.0\"?>\n"
+    },
+    {
+        "name": "taha",
+        "email": "123@blackmail.com",
+        "message": "i like children",
+        "timestamp": "2025-05-29 06:09:52",
+        "status": "success"
+    },
+    {
+        "status": "success",
+        "name": "test",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-29 06:18:15",
+        "file": "xxe.xml",
+        "xml_content": "&lt;?xml version=&quot;1.0&quot;?&gt;\n"
+    },
+    {
+        "status": "success",
+        "name": "test",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-29 06:21:43",
+        "file": "xxe.xml",
+        "xml_content": "&lt;?xml version=&quot;1.0&quot;?&gt;\n"
+    },
+    {
+        "status": "success",
+        "name": "test",
+        "email": "test@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-29 06:46:56",
+        "file": "xxe.xml",
+        "xml_content": "<?xml version=\"1.0\"?>\n"
+    },
+    {
+        "status": "success",
+        "name": "test",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-29 10:25:22",
+        "file": "xxe.xml",
+        "xml_content": "<?xml version=\"1.0\"?>\n"
+    },
+    {
+        "status": "success",
+        "name": "test",
+        "email": "tom@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-29 10:28:02",
+        "file": "xxe.xml",
+        "xml_content": "<?xml version=\"1.0\"?>\n"
+    },
+    {
+        "status": "success",
+        "name": "test",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-29 10:35:15",
+        "file": "xxe.xml",
+        "xml_content": "<?xml version=\"1.0\"?>\n"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert('XSS Exploited!')<\/script>",
+        "email": "tom@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-29 10:36:39"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert('XSS')<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-29 10:39:52"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert('XSS')<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-29 10:39:56"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert('XSS')<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-29 10:51:58",
+        "echoed_html": "test",
+        "file": "xxe.xml",
+        "xml_content": "<?xml version=\"1.0\"?>\n"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert('XSS')<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-29 10:52:13",
+        "echoed_html": "test",
+        "file": "test.php"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert('XSS')<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-29 10:52:26",
+        "echoed_html": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert('XSS')<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-29 10:52:33",
+        "echoed_html": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert('XSS')<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-29 10:52:34",
+        "echoed_html": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert('XSS')<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-29 10:52:35",
+        "echoed_html": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert('XSS')<\/script>",
+        "email": "asd@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-29 10:52:53",
+        "echoed_html": "test"
+    },
+    {
+        "status": "success",
+        "name": "faraz",
+        "email": "abdullahwebhero@gmail.com",
+        "message": "strawberry is a good fruit",
+        "timestamp": "2025-05-30 02:48:50",
+        "echoed_html": "strawberry is a good fruit",
+        "file": "xxe.xml",
+        "xml_content": "<?xml version=\"1.0\"?>\n"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert(\"XSS Test\")<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-30 02:52:16",
+        "echoed_html": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert(\"XSS Test\")<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-30 02:52:21",
+        "echoed_html": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert(\"XSS Test\")<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-30 02:53:28",
+        "echoed_html": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert(\"XSS Test\")<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-30 02:53:29",
+        "echoed_html": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert(\"XSS Test\")<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test 12",
+        "timestamp": "2025-05-30 02:53:39",
+        "echoed_html": "test 12"
+    },
+    {
+        "status": "success",
+        "name": "test",
+        "email": "tom@gmail.com",
+        "message": "<script>alert(\"XSS Test\")<\/script>\r\n",
+        "timestamp": "2025-05-30 02:59:00",
+        "raw_message": "<script>alert(\"XSS Test\")<\/script>\r\n"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert(\"XSS Test\")<\/script>",
+        "email": "test@test.com",
+        "message": "test",
+        "timestamp": "2025-05-30 03:06:02",
+        "raw_message": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert(\"XSS Test\")<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-30 03:38:10",
+        "raw_message": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert(\"XSS Test\")<\/script>",
+        "email": "test@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-30 03:58:53",
+        "raw_message": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert(\"XSS Test\")<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-30 04:02:22",
+        "raw_message": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert('XSS Attack Successful!'); document.body.style.backgroundColor = 'red';<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-30 04:05:10",
+        "raw_message": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert(\"XSS Test\")<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-30 04:06:06",
+        "raw_message": "test",
+        "xss_payload": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert(\"XSS Test\")<\/script>",
+        "email": "test@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-30 04:18:51",
+        "raw_message": "test",
+        "xss_payload": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert(\"XSS Test\")<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-30 04:25:36",
+        "raw_message": "test",
+        "xss_payload": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>document.body.style.backgroundColor = 'red'; alert('XSS!');<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-30 04:28:08",
+        "raw_message": "test",
+        "xss_payload": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert('XSS Test Success!');<\/script>",
+        "email": "test1@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-30 10:37:47",
+        "raw_message": "test",
+        "xss_payload": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert(\"XSS Test\")<\/script>",
+        "email": "tom@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-30 10:43:54",
+        "raw_message": "test",
+        "xss_payload": "test"
+    },
+    {
+        "status": "success",
+        "name": "test",
+        "email": "tom@gmail.com",
+        "message": "<script>alert('XSS Test Success!');<\/script>\r\n",
+        "timestamp": "2025-05-30 10:44:33",
+        "raw_message": "<script>alert('XSS Test Success!');<\/script>\r\n",
+        "xss_payload": "<script>alert('XSS Test Success!');<\/script>\r\n"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert(\"XSS Test\")<\/script>",
+        "email": "tom@gmail.com",
+        "message": "test",
+        "raw_message": "test",
+        "xss_payload": "test",
+        "timestamp": "2025-05-30 13:41:27"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert(\"XSS Test\")<\/script>",
+        "email": "tom@gmail.com",
+        "message": "test",
+        "timestamp": "2025-05-30 13:44:29",
+        "raw_message": "test",
+        "xss_payload": "test"
+    },
+    {
+        "status": "success",
+        "name": "<script>alert(\"XSS Test\")<\/script>",
+        "email": "tom@gmail.com",
+        "message": "test",
+        "raw_message": "test",
+        "xss_payload": "test",
+        "timestamp": "2025-05-30 13:45:35"
+    },
+    {
+        "status": "success",
+        "name": "test",
+        "email": "test1@gmail.com",
+        "message": "&lt;script&gt;alert(&#039;XSS Success!&#039;);&lt;\/script&gt;",
+        "raw_message": "<script>alert('XSS Success!');<\/script>",
+        "xss_payload": "<script>alert('XSS Success!');<\/script>",
+        "timestamp": "2025-05-30 13:46:11"
+    },
+    {
+        "status": "success",
+        "name": "James",
+        "email": "test2@gmail.com",
+        "message": "&lt;img src=x onerror=alert(&#039;XSS from img!&#039;);&gt;",
+        "raw_message": "<img src=x onerror=alert('XSS from img!');>",
+        "xss_payload": "<img src=x onerror=alert('XSS from img!');>",
+        "timestamp": "2025-05-30 13:47:20"
+    },
+    {
+        "status": "success",
+        "name": "test",
+        "email": "tom@gmail.com",
+        "message": "&lt;img src=&quot;nonexistent.jpg&quot; onerror=&quot;alert(&#039;XSS Image Bypass!&#039;);&quot;&gt;",
+        "raw_message": "<img src=\"nonexistent.jpg\" onerror=\"alert('XSS Image Bypass!');\">",
+        "xss_payload": "<img src=\"nonexistent.jpg\" onerror=\"alert('XSS Image Bypass!');\">",
+        "timestamp": "2025-05-30 13:49:14"
+    },
+    {
+        "status": "success",
+        "name": "test",
+        "email": "test1@gmail.com",
+        "message": "&lt;img src=&quot;x&quot; onerror=&quot;alert(&#039;XSS Alert!\\n\\nThis demonstrates Cross-Site Scripting (XSS) which can be dangerous because it can:\\n\\n1. Steal your session cookies (and thus your account credentials).\\n2. Deface the website or inject malicious content.\\n3. Redirect you to phishing sites or download malware.&#039;);&quot;&gt;",
+        "raw_message": "<img src=\"x\" onerror=\"alert('XSS Alert!\\n\\nThis demonstrates Cross-Site Scripting (XSS) which can be dangerous because it can:\\n\\n1. Steal your session cookies (and thus your account credentials).\\n2. Deface the website or inject malicious content.\\n3. Redirect you to phishing sites or download malware.');\">",
+        "xss_payload": "<img src=\"x\" onerror=\"alert('XSS Alert!\\n\\nThis demonstrates Cross-Site Scripting (XSS) which can be dangerous because it can:\\n\\n1. Steal your session cookies (and thus your account credentials).\\n2. Deface the website or inject malicious content.\\n3. Redirect you to phishing sites or download malware.');\">",
+        "timestamp": "2025-05-30 13:50:22"
+    },
+    {
+        "status": "success",
+        "name": "Son Goku",
+        "email": "abdullahwebhero@gmail.com",
+        "message": "&lt;img src=&quot;x&quot; onerror=&quot;alert(&#039;XSS Alert!\\n\\nThis demonstrates Cross-Site Scripting (XSS) which can be dangerous because it can:\\n\\n1. Steal your session cookies (and thus your account credentials).\\n2. Deface the website or inject malicious content.\\n3. Redirect you to phishing sites or download malware.&#039;);&quot;&gt;",
+        "raw_message": "<img src=\"x\" onerror=\"alert('XSS Alert!\\n\\nThis demonstrates Cross-Site Scripting (XSS) which can be dangerous because it can:\\n\\n1. Steal your session cookies (and thus your account credentials).\\n2. Deface the website or inject malicious content.\\n3. Redirect you to phishing sites or download malware.');\">",
+        "xss_payload": "<img src=\"x\" onerror=\"alert('XSS Alert!\\n\\nThis demonstrates Cross-Site Scripting (XSS) which can be dangerous because it can:\\n\\n1. Steal your session cookies (and thus your account credentials).\\n2. Deface the website or inject malicious content.\\n3. Redirect you to phishing sites or download malware.');\">",
+        "timestamp": "2025-05-30 13:52:44"
+    }
+]

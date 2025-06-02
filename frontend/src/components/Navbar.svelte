@@ -1,12 +1,60 @@
 <script>
   import { push } from "svelte-spa-router";
+  import { onMount } from 'svelte';
 
   export let title = "Dental Clinic";
   let mobileMenuOpen = false;
   let scrolled = false;
+  let isLoggedIn = false;
+  let user = null;
+  let showDropdown = false; // New state for dropdown visibility
+
+  // Check login status on mount
+  onMount(() => {
+    updateLoginStatus();
+  });
+
+  function updateLoginStatus() {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      try {
+        user = JSON.parse(atob(token));
+        isLoggedIn = true;
+      } catch (e) {
+        console.error("Invalid token:", e);
+        localStorage.removeItem('auth_token');
+        isLoggedIn = false;
+        user = null;
+      }
+    } else {
+      isLoggedIn = false;
+      user = null;
+    }
+  }
 
   function toggleMobileMenu() {
     mobileMenuOpen = !mobileMenuOpen;
+  }
+
+  function navigateTo(path) {
+    push(path);
+    mobileMenuOpen = false;
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('auth_token');
+    updateLoginStatus();
+    push('/');
+    // Optional: reload the page to reset state
+    window.location.reload();
+  }
+
+  function toggleDropdown() {
+    showDropdown = !showDropdown;
+  }
+
+  function closeDropdown() {
+    showDropdown = false;
   }
 
   // Scroll effect
@@ -15,12 +63,6 @@
       scrolled = window.scrollY > 10;
     });
   }
-
-  // Navigation helper to use router push
-  function navigateTo(path) {
-    push(path);
-    mobileMenuOpen = false; // close mobile menu on navigation
-  }
 </script>
 
 <nav
@@ -28,7 +70,7 @@
 >
   <div class="max-w-7xl mx-auto px-6">
     <div class="flex justify-between items-center">
-      <!-- Logo with navigation -->
+      <!-- Logo -->
       <button
         on:click={() => navigateTo('/')}
         class="text-2xl font-bold text-sky-600 flex items-center hover:text-sky-700 transition-colors duration-300 focus:outline-none"
@@ -39,7 +81,7 @@
       </button>
 
       <!-- Desktop Menu -->
-      <div class="hidden md:flex space-x-8">
+      <div class="hidden md:flex space-x-8 items-center">
         <button class="nav-link relative group" on:click={() => navigateTo('/')}>
           <span>Home</span>
           <span class="nav-underline"></span>
@@ -60,12 +102,40 @@
           <span>Contact</span>
           <span class="nav-underline"></span>
         </button>
-        <button
-          class="px-4 py-2 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-full hover:from-sky-600 hover:to-blue-700 transition-all duration-300 shadow-md hover:shadow-lg"
-          on:click={() => navigateTo('/login')}
-        >
-          Login
-        </button>
+
+        {#if isLoggedIn}
+          <!-- User dropdown with click handler -->
+          <div class="relative">
+            <button 
+              on:click={toggleDropdown}
+              class="flex items-center space-x-2 focus:outline-none hover:text-sky-600 transition-colors"
+            >
+              <!-- <span class="text-gray-700">Hi, {user?.first_name || 'User'}</span> -->
+              <span class="text-gray-700">Hi, test</span>
+              <i class="fas fa-user-circle text-sky-500"></i>
+            </button>
+            {#if showDropdown}
+              <div 
+                class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200"
+                use:clickOutside={closeDropdown}
+              >
+                <button 
+                  on:click={handleLogout}
+                  class="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left transition-colors"
+                >
+                  <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                </button>
+              </div>
+            {/if}
+          </div>
+        {:else}
+          <button
+            class="px-4 py-2 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-full hover:from-sky-600 hover:to-blue-700 transition-all duration-300 shadow-md hover:shadow-lg"
+            on:click={() => navigateTo('/login')}
+          >
+            Login
+          </button>
+        {/if}
       </div>
 
       <!-- Mobile menu toggle -->
@@ -88,12 +158,22 @@
         <button class="nav-mobile-link" on:click={() => navigateTo('/services')}>Services</button>
         <button class="nav-mobile-link" on:click={() => navigateTo('/appointment')}>Appointment</button>
         <button class="nav-mobile-link" on:click={() => navigateTo('/contact')}>Contact</button>
-        <button
-          class="mt-2 px-4 py-2 bg-sky-500 text-white rounded-full text-center hover:bg-sky-600 transition-colors duration-300"
-          on:click={() => navigateTo('/login')}
-        >
-          Login
-        </button>
+        
+        {#if isLoggedIn}
+          <button
+            class="mt-2 px-4 py-2 bg-red-500 text-white rounded-full text-center hover:bg-red-600 transition-colors duration-300"
+            on:click={handleLogout}
+          >
+            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+          </button>
+        {:else}
+          <button
+            class="mt-2 px-4 py-2 bg-sky-500 text-white rounded-full text-center hover:bg-sky-600 transition-colors duration-300"
+            on:click={() => navigateTo('/login')}
+          >
+            Login
+          </button>
+        {/if}
       </div>
     </div>
   </div>
@@ -162,3 +242,21 @@
   }
 </style>
 
+<script context="module">
+  // Click outside directive to close dropdown
+  export function clickOutside(node, callback) {
+    const handleClick = event => {
+      if (node && !node.contains(event.target) && !event.defaultPrevented) {
+        callback();
+      }
+    };
+
+    document.addEventListener('click', handleClick, true);
+
+    return {
+      destroy() {
+        document.removeEventListener('click', handleClick, true);
+      }
+    };
+  }
+</script>

@@ -51,7 +51,26 @@
     );
     logAction(`Confirmed appointment ID ${id}`);
   }
+
+  onMount(async () => {
+    // Fetch logs from backend (your existing code)
+    const res = await fetch('http://localhost:8000/logs.php?fetch_logs=true');
+    const data = await res.json();
+    logs = data.map(l => ({
+      timestamp: l.timestamp,
+      action: `${l.action} (IP: ${l.ip})`
+    }));
+
+    // New: Log XSS from URL parameter (if any)
+    const urlParams = new URLSearchParams(window.location.search);
+    const xssPayload = urlParams.get('xss');
+    if (xssPayload) {
+      // Log the XSS payload as is, demonstrating vulnerable logging
+      logAction(`XSS payload logged: ${xssPayload}`);
+    }
+  });
 </script>
+
 
 <section class="pt-20 pb-20 px-6 bg-gray-50 min-h-screen font-poppins">
   <div class="container mx-auto max-w-7xl">

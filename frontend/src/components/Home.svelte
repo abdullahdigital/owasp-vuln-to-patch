@@ -1,10 +1,58 @@
 <script>
   export let title = "Dental Clinic";
   
-  function showPage(page) {
-    console.log(`Navigating to: ${page}`);
-  }
+  import { onMount } from 'svelte';
+  let logMessage = '';
+  let debugInfo = '';
+
+  onMount(() => {
+    const params = new URLSearchParams(window.location.search);
+    const xssPayload = params.get('xss');
+    
+    if (xssPayload) {
+      logMessage = `Detected XSS payload: ${xssPayload}`;
+      console.log(logMessage);
+      
+      // Enhanced debug info
+      debugInfo += `Attempting to send payload to backend...\n`;
+      
+      fetch('http://localhost:8000/logs.php', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Debug': 'true' // Custom header for debugging
+        },
+        body: JSON.stringify({ 
+          action: `XSS Attempt: ${xssPayload}`,
+          source: 'URL parameter',
+          timestamp: new Date().toISOString()
+        })
+      })
+      .then(async response => {
+        debugInfo += `Received response with status: ${response.status}\n`;
+        if (!response.ok) {
+          const text = await response.text();
+          debugInfo += `Response error: ${text}\n`;
+          throw new Error(`HTTP ${response.status}: ${text}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Log saved:', data);
+        logMessage += ' | Log saved successfully';
+        debugInfo += `Server response: ${JSON.stringify(data)}\n`;
+      })
+      .catch(err => {
+        console.error('Logging error:', err);
+        logMessage += ` | Error: ${err.message}`;
+        debugInfo += `Error details: ${err.stack}\n`;
+      });
+    }
+  });
+
+  
 </script>
+
 
 <!-- Home Page -->
 <div id="home" class="page active">
