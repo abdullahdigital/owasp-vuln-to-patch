@@ -1,7 +1,7 @@
 <script>
   import { push } from 'svelte-spa-router';
   import { onMount } from 'svelte';
-  
+
   let email = "";
   let password = "";
   let firstName = "";
@@ -12,97 +12,125 @@
   let notification = { show: false, message: '', isError: false };
 
   onMount(() => {
-      const token = localStorage.getItem('auth_token');
-      if (token) {
-          try {
-              const user = JSON.parse(atob(token));
-              push(user.is_admin ? '/admin' : '/apoitment');
-          } catch (e) {
-              console.error("Invalid token:", e);
-          }
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      try {
+        const user = JSON.parse(atob(token));
+        push(user.is_admin ? '/admin' : '/appointments');
+      } catch (e) {
+        console.error("Invalid token:", e);
       }
+    }
   });
 
   function toggleToLogin() {
-      isLogin = true;
-      notification.show = false;
+    isLogin = true;
+    notification.show = false;
   }
 
   function toggleToSignUp() {
-      isLogin = false;
-      notification.show = false;
+    isLogin = false;
+    notification.show = false;
   }
 
   async function handleSubmit(e) {
-      e.preventDefault();
-      notification.show = false;
-      
-      try {
-          if (isLogin) {
-              await handleLogin();
-          } else {
-              await handleSignup();
-          }
-      } catch (error) {
-          showError(error.message);
+    e.preventDefault();
+    notification.show = false;
+
+    try {
+      if (isLogin) {
+        await handleLogin();
+      } else {
+        await handleSignup();
       }
+    } catch (error) {
+      showError(error.message);
+    }
   }
 
   async function handleLogin() {
-      const response = await fetch('http://localhost:8000/login.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-      });
-      
-      const data = await response.json();
-      
-      if (data.status === "success") {
-          localStorage.setItem('auth_token', data.token);
-          showSuccess(`Logged in as ${data.user.email}`);
-          push(data.user.is_admin ? '/admin' : '/');
-      } else {
-          throw new Error(data.message || "Login failed");
-      }
+    const response = await fetch('http://localhost:8000/login.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (data.status === "success") {
+      localStorage.setItem('auth_token', data.token);
+      showSuccess(`Logged in as ${data.user.email}`);
+      push(data.user.is_admin ? '/admin' : '/');
+    } else {
+      // The backend already logs failed login attempts.
+      // No need for a redundant log from the frontend here.
+      throw new Error(data.message || "Login failed");
+    }
   }
 
   async function handleSignup() {
-      if (password !== confirmPassword) {
-          throw new Error("Passwords don't match");
-      }
-      
-      const response = await fetch('http://localhost:8000/login.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-              signup: true,
-              email,
-              password,
-              firstName,
-              lastName,
-              phone
-          })
-      });
-      
-      const data = await response.json();
-      
-      if (data.status === "success") {
-          localStorage.setItem('auth_token', data.token);
-          showSuccess(`Account created for ${email}`);
-          push('/appointments');
-      } else {
-          throw new Error(data.message || "Signup failed");
-      }
+    if (password !== confirmPassword) {
+      throw new Error("Passwords don't match");
+    }
+
+    const response = await fetch('http://localhost:8000/login.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        signup: true,
+        email,
+        password,
+        firstName,
+        lastName,
+        phone
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.status === "success") {
+      localStorage.setItem('auth_token', data.token);
+      showSuccess(`Account created for ${email}`);
+      push('/appointment');
+    } else {
+      throw new Error(data.message || "Signup failed");
+    }
   }
 
   function showError(message) {
-      notification = { show: true, message, isError: true };
+    notification = { show: true, message, isError: true };
   }
 
   function showSuccess(message) {
-      notification = { show: true, message, isError: false };
+    notification = { show: true, message, isError: false };
   }
+
+  // This `sendLogToBackend` function is still useful for other frontend-initiated logs
+  // like the XSS detection or appointment actions in the AdminDashboard.
+  async function sendLogToBackend(action, source = 'frontend', additionalData = null) {
+    try {
+        const response = await fetch('http://localhost:8000/logs.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action, source, additional_data: additionalData }),
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('sendLogToBackend error response:', errorText);
+            return;
+        }
+
+        const data = await response.json();
+        console.log('Log sent successfully:', data);
+
+    } catch (error) {
+        console.error('sendLogToBackend network or other error:', error);
+    }
+  }
+
 </script>
+
 
 <div id="login" class="pt-32 pb-20 px-6">
   <section class="container mx-auto max-w-md">

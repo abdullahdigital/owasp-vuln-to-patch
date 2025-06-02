@@ -1,13 +1,13 @@
 import requests
 import json
 
-email = "test1@gmail.com"
+email = "goku@gmail.com"
 login_url = "http://localhost:8000/login.php"
 wordlist = [
     "password123", "123456", "letmein", "qwerty", "monkey", "dragon",
     "sunshine", "iloveyou", "princess", "football",
     "zingerburger",  # <-- real password
-    "baseball", "welcome", "master", "hello123", "freedom"
+    "baseball", "welcome", "master", "hello123", "freedom","test"
 ]
 
 for password in wordlist:
