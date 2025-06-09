@@ -1,131 +1,105 @@
 <?php
 // backend/insecure-php/public/history.php
 
-// Security Misconfiguration - Disable display errors in production
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
-// CORS headers
-header("Access-Control-Allow-Origin: http://localhost:5173"); // Specify your Svelte dev server origin
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    header("Access-Control-Allow-Origin: http://localhost:5173");
+    header("Access-Control-Allow-Methods: GET, OPTIONS");
+    header("Access-Control-Allow-Headers: Content-Type, Authorization");
+    header("Access-Control-Allow-Credentials: true");
+    http_response_code(204);
+    exit(0);
+}
+
+header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
 
-// Handle preflight requests for CORS
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    exit(0);
-}
-
-// Database path
 $dbPath = __DIR__ . '/../db/database.db';
 
-/**
- * Sends a JSON response and terminates the script.
- * @param array $data The data to be encoded as JSON.
- * @param int $statusCode The HTTP status code to send with the response.
- */
 function sendResponse($data, $statusCode = 200) {
     http_response_code($statusCode);
     echo json_encode($data);
     exit;
 }
 
+class DentalExploit {
+    public $message = "Safe message";
+
+    public function __destruct() {
+        file_put_contents(
+            __DIR__ . '/hacked.txt',
+            "💥 Insecure Deserialization Exploited!\n" .
+            "🗑 Delete files -> unlink('config.php')\n" .
+            "🕵 Exfiltrate data -> file_get_contents('/etc/passwd')\n" .
+            "💉 Plant backdoors -> file_put_contents('shell.php', '<?php system(\$_GET[\"cmd\"]); ?>')\n" .
+            "🧬 Run system commands -> system('rm -rf /')\n" .
+            "👤 Hijack sessions or escalate privileges\n",
+            FILE_APPEND
+        );
+    }
+}
+
+// 🧨 Insecure Deserialization Vulnerability
+if (isset($_GET['exploit'])) {
+    $data = base64_decode($_GET['exploit']);
+    $obj = unserialize($data); // This is the vulnerable line
+    
+    // For demo purposes - show what was deserialized
+    echo json_encode([
+        'status' => 'success',
+        'message' => 'Object deserialized',
+        'object' => print_r($obj, true)
+    ]);
+    exit;
+}
+
 try {
     $db = new SQLite3($dbPath);
-    if (!$db) {
-        throw new Exception("Could not open database: " . $db->lastErrorMsg());
-    }
+    if (!$db) throw new Exception("Database connection failed.");
 
     $token = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-    if (strpos($token, 'Bearer ') === 0) {
-        $token = substr($token, 7);
-    }
-
+    if (strpos($token, 'Bearer ') === 0) $token = substr($token, 7);
     $decoded_token = json_decode(base64_decode($token), true);
     $current_user_id = $decoded_token['id'] ?? null;
     $is_admin = $decoded_token['is_admin'] ?? false;
 
     if (!$current_user_id) {
-        sendResponse([
-            'status' => 'error',
-            'message' => 'Authentication required.'
-        ], 401);
+        sendResponse(['status' => 'error', 'message' => 'Authentication required.'], 401);
     }
 
-    if (isset($_GET['id'])) {
-        $requested_appointment_id = (int)$_GET['id'];
-
-        // --- IDOR VULNERABILITY HERE ---
-        // This query is intentionally vulnerable. It fetches an appointment by its ID
-        // WITHOUT checking if that appointment belongs to the $current_user_id.
-        // This allows an authenticated user to access any appointment by ID,
-        // even if they are not the owner.
-        $sql = "SELECT * FROM appointments WHERE id = :id";
-        $query = $db->prepare($sql);
-
-        if ($query === false) {
-            sendResponse([
-                'status' => 'error',
-                'message' => 'Failed to prepare SQL statement for single appointment. Check SQL syntax or table/column existence.',
-                'sql_error' => $db->lastErrorMsg(),
-                'sql_query' => $sql
-            ], 500);
-        }
-
-        $query->bindValue(':id', $requested_appointment_id, SQLITE3_INTEGER);
-        $result = $query->execute();
-
+    if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+        $appointment_id = (int)$_GET['id'];
+        $stmt = $db->prepare("SELECT * FROM appointments WHERE id = :id");
+        if (!$stmt) sendResponse(['status' => 'error', 'message' => 'DB prepare failed.'], 500);
+        $stmt->bindValue(':id', $appointment_id, SQLITE3_INTEGER);
+        $result = $stmt->execute();
         $appointment = $result->fetchArray(SQLITE3_ASSOC);
-
         if ($appointment) {
-            sendResponse([
-                'status' => 'success',
-                'appointment' => $appointment
-            ]);
+            sendResponse(['status' => 'success', 'appointment' => $appointment]);
         } else {
-            sendResponse([
-                'status' => 'error',
-                'message' => 'Appointment not found.'
-            ], 404);
+            sendResponse(['status' => 'error', 'message' => 'Appointment not found.'], 404);
         }
-
     } else {
-        // Fetch all appointments for the current user (this part is secure)
-        $sql = "SELECT * FROM appointments WHERE user_id = :user_id";
-        $query = $db->prepare($sql);
-
-        if ($query === false) {
-            sendResponse([
-                'status' => 'error',
-                'message' => 'Failed to prepare SQL statement for all appointments. Check SQL syntax or table/column existence.',
-                'sql_error' => $db->lastErrorMsg(),
-                'sql_query' => $sql
-            ], 500);
-        }
-
-        $query->bindValue(':user_id', $current_user_id, SQLITE3_INTEGER);
-        $result = $query->execute();
+        $stmt = $db->prepare("SELECT * FROM appointments WHERE user_id = :user_id");
+        if (!$stmt) sendResponse(['status' => 'error', 'message' => 'DB prepare failed.'], 500);
+        $stmt->bindValue(':user_id', $current_user_id, SQLITE3_INTEGER);
+        $result = $stmt->execute();
 
         $appointments = [];
         while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
             $appointments[] = $row;
         }
 
-        sendResponse([
-            'status' => 'success',
-            'appointments' => $appointments
-        ]);
+        sendResponse(['status' => 'success', 'appointments' => $appointments]);
     }
-
 } catch (Exception $e) {
-    sendResponse([
-        "status" => "error",
-        "message" => $e->getMessage()
-    ], 500);
+    sendResponse(['status' => 'error', 'message' => $e->getMessage()], 500);
 } finally {
-    if (isset($db)) {
-        $db->close();
-    }
+    if (isset($db)) $db->close();
 }
 ?>

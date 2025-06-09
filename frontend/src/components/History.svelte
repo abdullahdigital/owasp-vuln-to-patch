@@ -4,126 +4,133 @@
     import { user, logout, token } from '../stores/authStore';
     import { location, push } from 'svelte-spa-router';
 
-    let displayedAppointments = []; // Will hold either the user's list or a single IDOR-accessed appointment
+    let displayedAppointments = [];
     let isLoading = true;
     let errorMessage = '';
-
-    // Reactive statement: Recalculate currentLoggedInUserId whenever the 'user' store changes
     let currentLoggedInUserId = null;
-    user.subscribe(value => {
-        currentLoggedInUserId = value ? value.id : null;
-        // If the user logs out, clear displayed data and show a login message
-        if (!value) {
-            displayedAppointments = [];
-            errorMessage = 'Please log in to view your appointment history.';
-            isLoading = false; // Stop loading state when logged out
-        } else {
-            // If user logs in or user data changes, re-fetch appointments
-            fetchAppointments();
-        }
-    });
 
-    /**
-     * Fetches appointment data from the backend.
-     * This function handles both fetching the current user's appointments
-     * and fetching a specific appointment via the IDOR vulnerability.
-     */
+    let unsubscribeUser = null;
+    let unsubscribeLocation = null;
+
+    function handleLogout() {
+        logout();
+        push('/login');
+    }
+
+    function extractIdFromHash() {
+        const hash = window.location.hash; // e.g. "#/history?id=101"
+        const queryStringIndex = hash.indexOf('?');
+        if (queryStringIndex === -1) return null;
+
+        const queryString = hash.substring(queryStringIndex); // "?id=101"
+        const urlParams = new URLSearchParams(queryString);
+        return urlParams.get('id');
+    }
+
+    function subscribeToUser() {
+        if (unsubscribeUser) unsubscribeUser();
+        unsubscribeUser = user.subscribe(value => {
+            currentLoggedInUserId = value ? value.id : null;
+            if (!value) {
+                displayedAppointments = [];
+                errorMessage = 'Please log in to view your appointment history.';
+                isLoading = false;
+            } else {
+                fetchAppointments();
+            }
+        });
+    }
+
     async function fetchAppointments() {
         isLoading = true;
         errorMessage = '';
-        displayedAppointments = []; // Clear previous data before fetching
+        displayedAppointments = [];
 
         const currentUser = get(user);
         const authToken = get(token);
-        const currentUrlLocation = get(location); // Get current URL and query parameters
+        const requestedId = extractIdFromHash();
 
-        // If no user or token, ensure the "Please log in" message is shown.
+        console.log('fetchAppointments called.');
+        console.log('currentUser:', currentUser);
+        console.log('Token:', authToken ? 'Yes' : 'No');
+        console.log('Requested ID from hash:', requestedId);
+
         if (!currentUser || !authToken) {
             errorMessage = 'Please log in to view your appointment history.';
             isLoading = false;
-            return; // Exit the function if not logged in
+            return;
         }
-
-        const urlParams = new URLSearchParams(currentUrlLocation.search);
-        const requestedId = urlParams.get('id'); // Check for the 'id' parameter in the URL
 
         let apiUrl = `http://localhost:8000/history.php`;
-        if (requestedId && !isNaN(parseInt(requestedId, 10))) {
-            // If an 'id' is present and valid, request that specific appointment
-            apiUrl += `?id=${parseInt(requestedId, 10)}`;
+        if (requestedId && !isNaN(parseInt(requestedId))) {
+            apiUrl += `?id=${parseInt(requestedId)}`;
+            console.log(`Fetching specific appointment with ID ${requestedId}`);
+        } else {
+            console.log('Fetching all appointments for user');
         }
-        // If no 'id' parameter, the backend (history.php) will default to
-        // returning appointments for the current authenticated user.
 
         try {
             const response = await fetch(apiUrl, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}` // Always send the user's token
+                    'Authorization': `Bearer ${authToken}`
                 }
             });
 
             const result = await response.json();
+            console.log('API result:', result);
 
             if (!response.ok) {
-                // Handle API errors (e.g., 401 Unauthorized, 404 Not Found, 500 Server Error)
                 errorMessage = result.message || 'Failed to load appointments.';
                 if (response.status === 401) {
-                    // If the token is invalid or expired, force logout and redirect
                     logout();
                     push('/login');
                 }
             } else {
-                // API call was successful
                 if (requestedId) {
-                    // If a single appointment was requested by ID
                     displayedAppointments = result.appointment ? [result.appointment] : [];
                     if (displayedAppointments.length === 0) {
-                        errorMessage = 'Appointment not found or you do not have access (though IDOR is enabled).';
+                        errorMessage = `Appointment with ID ${requestedId} not found.`;
                     }
                 } else {
-                    // Otherwise, display the list of appointments for the current user
                     displayedAppointments = result.appointments || [];
                     if (displayedAppointments.length === 0) {
-                        errorMessage = 'No appointments found for your user account.';
+                        errorMessage = 'No appointments found for your account.';
                     }
                 }
             }
-        } catch (error) {
-            console.error('Network or fetch error:', error);
-            errorMessage = 'Could not connect to the server. Please check your connection.';
+        } catch (err) {
+            console.error('Error fetching:', err);
+            errorMessage = 'Could not connect to the server.';
         } finally {
             isLoading = false;
         }
     }
 
     onMount(() => {
-        // Subscribe to changes in the URL location (e.g., when 'id' parameter is added/removed)
-        const unsubscribeLocation = location.subscribe(() => {
-            fetchAppointments(); // Re-fetch data whenever the URL changes
+        subscribeToUser();
+
+        unsubscribeLocation = location.subscribe(() => {
+            fetchAppointments();
         });
 
-        // Perform the initial fetch when the component first mounts
         fetchAppointments();
 
-        // Return a cleanup function for when the component is unmounted
         return () => {
-            unsubscribeLocation();
+            if (unsubscribeUser) unsubscribeUser();
+            if (unsubscribeLocation) unsubscribeLocation();
         };
     });
-
-    // Logout handler
-    function handleLogout() {
-        logout(); // Clear user and token from Svelte store and localStorage
-        push('/login'); // Redirect to the login page
-    }
 </script>
+
+
 
 <section class="max-w-4xl mx-auto p-6 bg-white rounded shadow-md mt-8 font-poppins">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-sky-600">Appointment History</h1>
         {#if $user}
+            <!-- This logout button is local to History.svelte, Navbar will also have one -->
             <button on:click={handleLogout} class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
                 Logout ({$user.email})
             </button>
@@ -186,11 +193,16 @@
                         </div>
                     {/if}
                 </li>
+            {:else}
+                <!-- This block will render if displayedAppointments is empty but not loading/error -->
+                <p class="text-gray-500 text-center my-8">No appointments found for your account.</p>
             {/each}
         </ul>
     {:else}
+        <!-- This handles the case where there are no appointments AND not loading/error -->
         <p class="text-gray-500 text-center my-8">No appointments found for your account.</p>
     {/if}
+
 
     {#if $user && !(new URLSearchParams(get(location).search).get('id'))}
         <div class="mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded">
@@ -204,11 +216,11 @@
                 try navigating to:
             </p>
             <code class="block mt-2 p-2 bg-gray-100 rounded break-all">
-                http://localhost:5173/#/history?id=3
+                http://localhost:5173/#/history?id=301
             </code>
             <p class="mt-2 text-sm">
                 (This would attempt to fetch an appointment belonging to `patient2@clinic.com`, User ID 3).
-                You might also try `id=5` for the admin's sensitive appointment.
+                You might also try `id=501` for the admin's sensitive appointment.
             </p>
         </div>
     {/if}

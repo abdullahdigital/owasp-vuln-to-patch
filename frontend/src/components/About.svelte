@@ -13,13 +13,13 @@
         name: "Dr. Michael Rodriguez",
         role: "Orthodontist",
         bio: "Specializes in braces and Invisalign treatments for patients of all ages.",
-        image: "https://images.unsplash.com/photo-1622253692010-333f2da60341?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1528&q=80"
+        image: "/src/img/dental_team/mich2.webp"
       },
       {
         name: "Dr. Sarah Johnson",
         role: "Pediatric Dentist",
         bio: "Makes dental visits fun and comfortable for our youngest patients.",
-        image: "https://images.unsplash.com/photo-1594824476967-48c8b9642736?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80"
+        image: "/src/img/dental_team/sarah.webp"
       }
     ];
   

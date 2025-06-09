@@ -21,6 +21,7 @@
     '/contact': Contact,
     '/login': Login,
     '/history': History,
+     '/history/:id': History, 
     '/adminLogin': AdminLogin,
   '/adminDashboard': AdminDashboard,}
 </script>
