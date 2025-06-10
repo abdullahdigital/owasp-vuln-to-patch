@@ -54,7 +54,7 @@ def modify_jwt_payload_for_admin(jwt_payload_b64url, target_admin_value=1):
 # --- Example Usage ---
 if __name__ == "__main__":
     # Your example JWT payload (Base64Url encoded)
-    original_payload_b64url = "eyJpZCI6MywiZW1haWwiOiJ0ZXN0QGdtYWlsLmNvbSIsImlzX2FkbWluIjowLCJpc3N1ZWQiOjE3NDg0MzMwMzN9"
+    original_payload_b64url = "eyJpZCI6NywiZW1haWwiOiJnb2t1QGdtYWlsLmNvbSIsImlzX2FkbWluIjowLCJpc3N1ZWQiOjE3NDk1NTc0NjB9"
 
     print(f"Input payload (Base64Url): {original_payload_b64url}\n")
 
