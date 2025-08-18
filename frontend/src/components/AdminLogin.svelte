@@ -2,17 +2,16 @@
     import { createEventDispatcher } from 'svelte';
     let username = '';
     let password = '';
-    let error = '';
-  
+    let errorMessage = '';
+
     const dispatch = createEventDispatcher();
-  
+
     function login() {
-      // Simple hardcoded superuser creds for demo
       if (username === 'admin' && password === 'supersecret') {
-        error = '';
+        errorMessage = '';
         dispatch('loginSuccess');
       } else {
-        error = 'Invalid credentials';
+        errorMessage = 'Invalid username or password.';
       }
     }
   </script>
@@ -21,8 +20,8 @@
     <div class="max-w-md w-full bg-white p-8 rounded-xl shadow-lg">
       <h2 class="text-2xl font-bold mb-6 text-sky-600">Admin Login</h2>
   
-      {#if error}
-        <div class="bg-red-100 text-red-700 p-2 mb-4 rounded">{error}</div>
+      {#if errorMessage}
+        <div class="bg-red-100 text-red-700 p-2 mb-4 rounded">{errorMessage}</div>
       {/if}
   
       <form on:submit|preventDefault={login} class="space-y-4">

@@ -31,9 +31,12 @@
       if (file) formData.append("file", file);
 
       try {
-          const response = await fetch("http://localhost:8000/contact.php", {
+          const response = await fetch("http://localhost:8000/api/contact", {
               method: "POST",
-              body: formData
+              body: formData,
+              headers: {
+                  'Accept': 'application/json'
+              }
           });
 
           const result = await response.json();

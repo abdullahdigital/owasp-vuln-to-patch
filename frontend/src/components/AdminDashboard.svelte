@@ -44,7 +44,7 @@
    */
   async function sendGeneralLogToBackend(action, source, email = null, additionalData = null) {
     try {
-      const response = await fetch('http://localhost:8000/logs.php', {
+      const response = await fetch('http://localhost:8000/secure-php/public/logs.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +73,7 @@
       // It's good practice to send a parameter like 'fetch_logs=true' to distinguish GET requests
       // from other potential GET requests to the same endpoint if you had more complex logic.
       // For a simple GET, it's often not strictly necessary but can be a helpful indicator.
-      const res = await fetch('http://localhost:8000/logs.php?fetch_logs=true');
+      const res = await fetch('http://localhost:8000/secure-php/public/logs.php?fetch_logs=true');
       if (res.ok) {
         const data = await res.json();
         generalLogs = data.map(l => {
@@ -115,7 +115,7 @@
    */
   async function fetchLoginAttemptLogs() {
     try {
-      const res = await fetch('http://localhost:8000/attempts.php?fetch_logs=true');
+      const res = await fetch('http://localhost:8000/secure-php/public/attempts.php?fetch_logs=true');
       if (res.ok) {
         const data = await res.json();
         loginAttemptLogs = data.map(l => {

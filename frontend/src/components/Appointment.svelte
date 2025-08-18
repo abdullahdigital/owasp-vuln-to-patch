@@ -1,11 +1,11 @@
 <script>
+  import { user } from '../stores/authStore.js';
+  
   let formData = {
     name: '',
-    email: '',
-    phone: '',
     date: '',
-    time: '',
     service: '',
+    phone: '',
     message: ''
   };
   
@@ -20,36 +20,53 @@
     notification.show = false;
     
     try {
-        const response = await fetch('http://localhost:8000/appointment.php', {
+        const currentUser = $user;
+        if (!currentUser) {
+            notification = {
+                show: true,
+                message: "Please login to book an appointment",
+                isError: true
+            };
+            return;
+        }
+        
+        const response = await fetch('http://localhost:8000/api/appointments', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${currentUser.token}`
             },
-            body: JSON.stringify(formData)
+            credentials: 'include',
+            body: JSON.stringify({
+                name: formData.name,
+                service_id: formData.service,
+                date: formData.date,
+                phone: formData.phone,
+                notes: formData.message
+            })
         });
         
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorData = await response.json();
+            throw new Error(`HTTP error! status: ${response.status}. Errors: ${JSON.stringify(errorData.errors || errorData)}`);
         }
         
         const result = await response.json();
         
-        let displayMessage = result.message;
-        if (result.sql_injection) {
-            displayMessage += "\n\nSQL INJECTION DETECTED!\n";
-            displayMessage += "Latest appointments:\n" + 
-                JSON.stringify(result.leaked_data, null, 2);
-            
-            if (result.custom_query) {
-                displayMessage += "\nCustom query results:\n" +
-                    JSON.stringify(result.custom_query, null, 2);
-            }
-        }
-        
         notification = {
             show: true,
-            message: displayMessage,
-            isError: result.status === "error"
+            message: result.message || 'Appointment booked successfully!',
+            isError: false
+        };
+        
+        // Reset form after successful submission
+        formData = {
+            name: '',
+            service: '',
+            date: '',
+            phone: '',
+            message: ''
         };
         
     } catch (error) {
@@ -134,21 +151,17 @@
         <div class="md:w-1/2 p-8">
           <form on:submit={handleSubmit}>
             <input type="text" bind:value={formData.name} placeholder="Full Name" class="input-field" required />
-            <input type="email" bind:value={formData.email} placeholder="Email Address" class="input-field" required />
-            <input type="tel" bind:value={formData.phone} placeholder="Phone Number" class="input-field" required />
+            
             <input type="date" bind:value={formData.date} class="input-field" required />
-
-            <select bind:value={formData.time} class="input-field" required>
-              <option value="">Select Time</option>
-              <option value="08:00">8:00 AM</option>
-              <option value="09:00">9:00 AM</option>
-              <option value="10:00">10:00 AM</option>
-            </select>
+            
+            <input type="tel" bind:value={formData.phone} placeholder="Phone Number" class="input-field" required />
 
             <select bind:value={formData.service} class="input-field" required>
               <option value="">Select Service</option>
-              <option value="General Checkup">General Checkup</option>
-              <option value="Cleaning">Cleaning</option>
+              <option value="1">General Checkup</option>
+              <option value="2">Cleaning</option>
+              <option value="3">Tooth Extraction</option>
+              <option value="4">Root Canal</option>
             </select>
 
             <textarea bind:value={formData.message} placeholder="Additional Information" class="input-field"></textarea>

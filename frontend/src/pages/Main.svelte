@@ -23,33 +23,7 @@
     '/history': History,
      '/history/:id': History, 
     '/adminLogin': AdminLogin,
-    '/adminDashboard': wrap({
-      component: AdminDashboard,
-      conditions: [
-        async () => {
-          const token = localStorage.getItem('auth_token');
-          if (!token) return false;
-
-          try {
-            const response = await fetch('http://localhost:8000/verify_token.php', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-              }
-            });
-            
-            if (!response.ok) return false;
-            
-            const result = await response.json();
-            return result.is_admin === true;
-          } catch (e) {
-            console.error('Token verification failed:', e);
-            return false;
-          }
-        }
-      ]
-    })
+    '/adminDashboard': AdminDashboard
   }
 </script>
 

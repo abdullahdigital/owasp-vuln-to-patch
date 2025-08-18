@@ -1,7 +1,7 @@
 <script>
   import { push } from 'svelte-spa-router';
   import { onMount } from 'svelte';
-  import { login, user } from '../stores/authStore'; // Import the login function and user store
+  import { login, register, user } from '../stores/authStore';
 
   let email = "";
   let password = "";
@@ -11,12 +11,6 @@
   let confirmPassword = "";
   let isLogin = true;
   let notification = { show: false, message: '', isError: false };
-
-  onMount(() => {
-      // The user store subscription in History.svelte handles redirection based on login status.
-      // We can remove this redundant check here to simplify and centralize auth flow.
-      // If a user is already logged in and tries to access /login, they will be redirected by the router or by Navbar.svelte based on authStore.
-  });
 
   function toggleToLogin() {
       isLogin = true;
@@ -44,21 +38,12 @@
   }
 
   async function handleLogin() {
-      const response = await fetch('http://localhost:8000/login.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.status === "success") {
-          // Use the login function from authStore to set user data and token
-          login(data.user, data.token);
-          showSuccess(`Logged in as ${data.user.email}`);
-          push(data.user.is_admin ? '/admin' : '/history'); // Redirect to history or admin dashboard
-      } else {
-          throw new Error(data.message || "Login failed");
+      try {
+          const loggedInUser = await login(email, password);
+          showSuccess(`Logged in as ${loggedInUser.email}`);
+          push(loggedInUser.role === 'admin' ? '/admin' : '/');
+      } catch (error) {
+          throw new Error(error.message || "Login failed");
       }
   }
 
@@ -67,28 +52,12 @@
           throw new Error("Passwords don't match");
       }
 
-      const response = await fetch('http://localhost:8000/login.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-              signup: true,
-              email,
-              password,
-              firstName,
-              lastName,
-              phone
-          })
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.status === "success") {
-          // Use the login function from authStore for signup as well
-          login(data.user, data.token);
-          showSuccess(`Account created for ${email}. You are now logged in.`);
-          push('/history'); // Redirect to history after signup and login
-      } else {
-          throw new Error(data.message || "Signup failed");
+      try {
+          const registeredUser = await register(firstName, lastName, email, password, phone);
+          showSuccess(`Account created for ${registeredUser.email}. You are now logged in.`);
+          push('/');
+      } catch (error) {
+          throw new Error(error.message || "Signup failed");
       }
   }
 
@@ -104,10 +73,10 @@
   // like the XSS detection or appointment actions in the AdminDashboard.
   async function sendLogToBackend(action, source = 'frontend', additionalData = null) {
       try {
-          const response = await fetch('http://localhost:8000/logs.php', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ action, source, additional_data: additionalData }),
+          const response = await fetch('http://localhost:8000/api/logs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ action, source, additional_data: additionalData }),
           });
 
           if (!response.ok) {
@@ -170,7 +139,7 @@
                       <div class="mb-6">
                           <label class="block text-gray-700 font-medium mb-2">Email Address</label>
                           <input
-                              type="text"
+                              type="email"
                               bind:value={email}
                               placeholder="Your Email"
                               class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
@@ -186,6 +155,7 @@
                               placeholder="Your Password"
                               class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
                               required
+                              minlength="8"
                           >
                       </div>
 
@@ -199,27 +169,36 @@
               {:else}
                   <!-- Signup Form -->
                   <form on:submit={handleSubmit}>
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                          <div>
-                              <label class="block text-gray-700 font-medium mb-2">First Name</label>
-                              <input
-                                  type="text"
-                                  bind:value={firstName}
-                                  placeholder="First Name"
-                                  class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-                                  required
-                              >
-                          </div>
-                          <div>
-                              <label class="block text-gray-700 font-medium mb-2">Last Name</label>
-                              <input
-                                  type="text"
-                                  bind:value={lastName}
-                                  placeholder="Last Name"
-                                  class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-                                  required
-                              >
-                          </div>
+                      <div class="mb-6">
+                          <label class="block text-gray-700 font-medium mb-2">First Name</label>
+                          <input
+                              type="text"
+                              bind:value={firstName}
+                              placeholder="Your First Name"
+                              class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                              required
+                          >
+                      </div>
+                      
+                      <div class="mb-6">
+                          <label class="block text-gray-700 font-medium mb-2">Last Name</label>
+                          <input
+                              type="text"
+                              bind:value={lastName}
+                              placeholder="Your Last Name"
+                              class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                              required
+                          >
+                      </div>
+                      
+                      <div class="mb-6">
+                          <label class="block text-gray-700 font-medium mb-2">Phone Number</label>
+                          <input
+                              type="tel"
+                              bind:value={phone}
+                              placeholder="Your Phone Number"
+                              class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                          >
                       </div>
 
                       <div class="mb-6">
@@ -228,17 +207,6 @@
                               type="email"
                               bind:value={email}
                               placeholder="Your Email"
-                              class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-                              required
-                          >
-                      </div>
-
-                      <div class="mb-6">
-                          <label class="block text-gray-700 font-medium mb-2">Phone Number</label>
-                          <input
-                              type="tel"
-                              bind:value={phone}
-                              placeholder="Your Phone Number"
                               class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
                               required
                           >

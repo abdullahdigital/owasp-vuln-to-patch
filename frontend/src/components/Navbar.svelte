@@ -88,8 +88,8 @@
                           on:click={toggleDropdown}
                           class="flex items-center space-x-2 focus:outline-none hover:text-sky-600 transition-colors"
                       >
-                          <!-- Display user email from the store -->
-                          <span class="text-gray-700">Hi, {$user.email}</span>
+                          <!-- Display user name from the store -->
+                          <span class="text-gray-700">Hi, {$user.name}</span>
                           <i class="fas fa-user-circle text-sky-500"></i>
                       </button>
                       {#if showDropdown}

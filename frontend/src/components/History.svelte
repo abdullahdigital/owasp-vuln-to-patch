@@ -61,9 +61,9 @@
             return;
         }
 
-        let apiUrl = `http://localhost:8000/history.php`;
+        let apiUrl = `http://localhost:8000/api/appointments`;
         if (requestedId && !isNaN(parseInt(requestedId))) {
-            apiUrl += `?id=${parseInt(requestedId)}`;
+            apiUrl += `/${parseInt(requestedId)}`;
             console.log(`Fetching specific appointment with ID ${requestedId}`);
         } else {
             console.log('Fetching all appointments for user');
@@ -74,6 +74,7 @@
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                     'Authorization': `Bearer ${authToken}`
                 }
             });
