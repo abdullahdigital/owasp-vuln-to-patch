@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  laravel_app:
+    build:
+      context: ./laravel
+      dockerfile: Dockerfile
+    container_name: laravel_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./laravel:/var/www/html
+    networks:
+      - app-network
+
+  svelte_frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: svelte_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+    networks:
+      - app-network
+    depends_on:
+      - laravel_app
+
+networks:
+  app-network:
+    driver: bridge
